@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.DataProtection;
+using NetCoreEF.Application.Dtos;
 using NetCoreEF.Data;
 using NetCoreEF.Models;
 
@@ -14,6 +15,7 @@ namespace NetCoreEF.Mappings
       CreateMap<Category, CategoryDto>(); // arayüze dto çağırmam lazım bu sebeple entity to dto mapping
       //CreateMap<CategoryCreateDto, Category>(); // dto üzerinde validasyon kontrolü yaptıktan sonra to entity mapping
 
+      CreateMap<Category, CategoryUpdateRequestDto>().ReverseMap();
 
       CreateMap<Category, CategoryCreateDto>()
         .ForMember(dest =>

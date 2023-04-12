@@ -1,0 +1,38 @@
+﻿@model CategoryUpdateRequestDto
+
+
+@if (ViewBag.Succeded != null)
+{
+  if ((bool)ViewBag?.Succeded)
+  {
+    <div class="alert alert-success">@ViewBag.Message</div>
+  }
+  else if ((bool)!ViewBag?.Succeded)
+  {
+    <div class="alert alert-danger">@ViewBag.Message</div>
+  }
+}
+
+
+
+
+<form asp-controller="Category" asp-action="Update" method="post" novalidate>
+  <div class="mb-3 mt-3">
+    <input type="hidden" asp-for="Key" />
+    <label asp-for="CategoryName" class="form-label"></label>
+    <input type="text" class="form-control" asp-for="CategoryName">
+    <span class="text-danger" asp-validation-for="CategoryName"></span>
+  </div>
+  <div class="mb-3">
+    <label asp-for="Description" class="form-label"></label>
+    <textarea asp-for="Description" class="form-control"></textarea>
+    <span class="text-danger" asp-validation-for="Description"></span>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Güncelle</button>
+</form>
+
+@section Scripts {
+  @*jquery validation client-side validation *@
+  <partial name="_ValidationScriptsPartial" />
+}

@@ -1,14 +1,26 @@
-﻿
-@model IEnumerable<CategoryDto>
+﻿@model IEnumerable<CategoryDto>
 
 
-  <div>
+@if (TempData["Succeded"] != null)
+{
+  if ((bool)TempData["Succeded"])
+  {
+    <div class="alert alert-success">@TempData["Message"]</div>
+  }
+  else if (!(bool)TempData["Succeded"])
+  {
+    <div class="alert alert-danger">@TempData["Message"]</div>
+  }
+}
+
+
+<div>
   <a class="btn btn-link" asp-route="kategoriEkle">Yeni Kategori</a>
-  </div>
+</div>
 
 
 <table class="table table-striped table-hover">
- 
+
   <thead>
     <tr>
       <th> @Html.DisplayNameFor(model => model.CategoryName) </th>
@@ -16,13 +28,13 @@
       <th> @Html.DisplayNameFor(model => model.Description) </th>
       <th> İşlemler </th>
     </tr>
- 
+
   </thead>
 
   <tbody>
     @foreach (var category in Model)
     {
-      <tr>
+      <tr id="tr_@category.ProtectorId">
         <td>
           @category.CategoryName
         </td>
@@ -30,15 +42,60 @@
           @category.Description
         </td>
         <td>
-          <a asp-action="Delete" asp-controller="Category" asp-route-id="@category.ProtectorId" class="btn btn-danger">Sil</a>
+          <a asp-action="Detail" asp-controller="Category" asp-route-id="@category.ProtectorId" class="btn btn-warning">Detay</a>
           &nbsp;
-          <a asp-action="Update" asp-controller="Category" asp-route-id="@category.ProtectorId" class="btn btn-primary">Düzenle</a>
+          <a asp-action="Update" asp-controller="Category" asp-route-key="@category.ProtectorId" class="btn btn-primary">Düzenle</a>
           &nbsp;
-          <a asp-route="kategoriDetay" asp-route-cId="@category.ProtectorId" class="btn btn-warn">Detay</a>
+          <button onclick="onDelete('@category.ProtectorId')" class="btn btn-danger">Sil</button>
         </td>
       </tr>
     }
- 
+
   </tbody>
 
 </table>
+
+@section Scripts {
+  <script>
+
+    onDelete = (key) => {
+
+      var result = confirm('Kaydı silmek istediğinize emin misiniz?');
+      const deleteRequestObject = {
+        key:key
+      }
+
+      console.log('key', key);
+
+      if(result) {
+        $.ajax({
+          method:'POST',
+          url:'/Category/Delete',
+          contentType:'application/json',
+          dataType:'json',
+          data:JSON.stringify(deleteRequestObject),
+          success:(response) => {
+              console.log('delete-response', response);
+              // ilgili kaydın arayüzden silinmesini sağlıyacağız.
+              // animasyon ile kaldır.
+
+              if(response.isSuccess) {
+                        alert(response.successMessage)
+                        $(`#tr_${key}`).fadeOut();
+              }
+              else {
+                alert(response.errorMessage)
+              }
+          
+                   
+          },
+          error:(err) => {
+            console.log('err', err);
+          }
+        })
+      }
+
+    }
+
+  </script>
+          }

@@ -1,6 +1,7 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using NetCoreEF.Application.Handlers;
 using NetCoreEF.Attributes;
 using NetCoreEF.Data;
 using NetCoreEF.Models;
@@ -15,11 +16,17 @@ builder.Services.AddControllersWithViews().AddFluentValidation(c=> c.RegisterVal
 
 var assemby = Assembly.GetExecutingAssembly();
 builder.Services.AddAutoMapper(assemby);
+
 // reflection ile automapper eklemiþ olduk
 
 // uygulama genelinde global olarak attibute üzerinden bir validayon kontrolü yapýcam
 builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddScoped<ExceptionFilterAttribute>();
+
+// mediatR uygulamada çalýþmasý için servisleri ekleri
+// mediator kullanýlan 1 sýnýfý referans alarak ilgili katmaný reflection ile load edelim.
+builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<CategoryUpdateRequestHandler>());
+
 
 // db baðlantýsý sadece buradan yönetiliyor.
 // birden fazla db varsa istediðimiz kadar DbContext ekleyebiliriz

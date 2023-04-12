@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using NetCoreEF.Application.Dtos;
 using NetCoreEF.Attributes;
 using NetCoreEF.Data;
 using NetCoreEF.Models;
@@ -14,13 +17,15 @@ namespace NetCoreEF.Controllers
     public IDataProtector _protector;
     private IMapper mapper;
     private ILogger<CategoryController> logger;
+    private IMediator mediator;
 
-    public CategoryController(NorthwindContext db, IDataProtectionProvider provider, IMapper mapper, ILogger<CategoryController> logger)
+    public CategoryController(NorthwindContext db, IDataProtectionProvider provider, IMapper mapper, ILogger<CategoryController> logger, IMediator mediator)
     {
       this.db = db;
       this._protector = provider.CreateProtector("kategoriId");
       this.mapper = mapper;
       this.logger = logger;
+      this.mediator = mediator;
     }
 
 
@@ -170,28 +175,56 @@ namespace NetCoreEF.Controllers
 
 
     [HttpGet]
-    public IActionResult Update(int? id)
+    public IActionResult Update(string key)
     {
-      return View();
+      string entityId = _protector.Unprotect(key);
+      int id = Convert.ToInt32(entityId);
+
+      var entity = db.Categories.Find(id);
+
+      if (entity == null)
+        return NotFound();
+
+      var model = mapper.Map<CategoryUpdateRequestDto>(entity);
+
+      return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Update(Category category)
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
+    [ServiceFilter(typeof(ExceptionFilterAttribute))]
+    public async Task<IActionResult> Update(CategoryUpdateRequestDto model)
     {
-      return View();
+      var response = await this.mediator.Send(model);
+
+      ViewBag.Succeded = response.IsSucceded;
+      ViewBag.Message = response.IsSucceded ? response.SuccessMessage : response.ErrorMessage;
+
+      // 1 sayfadan başka bir sayafaya yönlendiğimizde elimizde yönlendiğimiz sayfadan veri taşımak için kullanırız.
+
+      TempData["Message"] = response.IsSucceded ? response.SuccessMessage : response.ErrorMessage;
+      TempData["Succeded"] = response.IsSucceded;
+      // sonucu yönlendirip liste sayfasında result görücem.
+
+      //return Redirect("kategoriler");
+      return RedirectToAction("List"); // yani şuan CategoryControllerda olduğum için sadece List actioName yazmam yeterli, farklı bir controller action'a yönlendirmek gerekirse o zaman controller, areas gibi değerleri yazmam lazım.
+      //return View();
     }
 
-    public IActionResult Delete(int? id)
-    {
-      return View();
-    }
-
+    // NetCore tarafında Ajax ile Json Result çalışırken [FromBody] yandi request body üzerinden veri alacağımız anlamına geliyor. [FromHeader] header dan değer oku, [FromQuery] querstring parameters oku [FromRoute] route üzerinden oku
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Delete(Category category)
+    public async Task<IActionResult> Delete([FromBody] DeleteRequestObject model)
     {
-      return View();
+      string entityId = _protector.Unprotect(model.Key);
+      int id = Convert.ToInt32(entityId);
+
+      var entity = await db.Categories.FindAsync(id);
+      db.Categories.Remove(entity);
+      int result = await  db.SaveChangesAsync();
+      var response = new { IsSuccess = result > 0 ? true : false, successMessage = result > 0 ? "Başarılı" : "", errorMessage = result == 0 ? "Hatalı":"" };
+
+      return Json(response);
     }
 
 
