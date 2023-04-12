@@ -1,0 +1,19 @@
+﻿@model CategoryDto
+
+
+<div class="card">
+  <h5 class="card-header">Featured</h5>
+  <div class="card-body">
+    <div class="row">
+      <label>
+        @Html.DisplayNameFor(model => model.CategoryName):  @Model.CategoryName
+      </label>
+    
+    </div>
+    <div class="row">
+      <label>
+        @Html.DisplayNameFor(model => model.Description):  @Model.Description
+      </label>
+    </div>
+  </div>
+</div>
