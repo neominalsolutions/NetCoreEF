@@ -1,16 +1,25 @@
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using NetCoreEF.Attributes;
 using NetCoreEF.Data;
 using NetCoreEF.Models;
+using NetCoreEF.Validators;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+// mvc modelstateler fluent validation üzerinden çalýþacaktýr.
+builder.Services.AddControllersWithViews().AddFluentValidation(c=> c.RegisterValidatorsFromAssemblyContaining<CreateCategoryValidator>());
+
 var assemby = Assembly.GetExecutingAssembly();
 builder.Services.AddAutoMapper(assemby);
 // reflection ile automapper eklemiþ olduk
+
+// uygulama genelinde global olarak attibute üzerinden bir validayon kontrolü yapýcam
+builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.AddScoped<ExceptionFilterAttribute>();
 
 // db baðlantýsý sadece buradan yönetiliyor.
 // birden fazla db varsa istediðimiz kadar DbContext ekleyebiliriz
