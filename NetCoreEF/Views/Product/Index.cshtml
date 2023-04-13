@@ -1,0 +1,49 @@
+﻿
+
+<div class="row">
+  <div class="col-3">
+  
+
+    <div class="input-group mb-3">
+      <input onchange="onSearch(event.target.value)" type="text" class="form-control" placeholder="arama yapınız" aria-label="kategori veya ürün ismine göre ara" aria-describedby="basic-addon2">
+      <span class="input-group-text" id="basic-addon2">
+        Ara
+      </span>
+    </div>
+
+    <h1>  Kategorilerin listesi</h1>
+    <div>
+      @await Component.InvokeAsync("CategoryList")
+    </div>
+
+  </div>
+  <div class="col-9" id="ürünlerimiz">
+    @await Component.InvokeAsync("ProductList",new {categoryId=ViewBag.cId})
+  </div>
+</div>
+
+
+@section Scripts {
+
+  <script>
+
+    const onSearch = (searchText) => {
+      console.log('searchText', searchText);
+      $.ajax({
+            url: `/Product/ProductListViewComponent?searchText=${searchText}`,
+        method:'GET',
+        success:(htmlContent)=> {
+
+                console.log('htmlContent', htmlContent);
+          // yeniden filterelenen componentin resultı olacak.
+                $('#ürünlerimiz').html(htmlContent);
+        },
+        error:(err) => {
+          console.log('err', err);
+        }
+      })
+    }
+
+  </script>
+
+}

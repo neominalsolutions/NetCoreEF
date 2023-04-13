@@ -1,0 +1,12 @@
+﻿@model List<Category>
+
+
+<bs-list-group>
+
+  @foreach (var categoryItem in Model)
+  {
+    <bs-list-group-item text="@categoryItem.CategoryName" badgeText="@categoryItem.Products.Count()" url="/Product/Index?cId=@categoryItem.CategoryId"></bs-list-group-item>
+  }
+
+</bs-list-group>
+

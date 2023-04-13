@@ -42,9 +42,9 @@
           @category.Description
         </td>
         <td>
-          <a asp-action="Detail" asp-controller="Category" asp-route-id="@category.ProtectorId" class="btn btn-warning">Detay</a>
+          <a asp-route="kategoriDetay" asp-route-cId="@category.ProtectorId" class="btn btn-warning">Detay</a>
           &nbsp;
-          <a asp-action="Update" asp-controller="Category" asp-route-key="@category.ProtectorId" class="btn btn-primary">Düzenle</a>
+          <a asp-area="Admin" asp-action="Update" asp-controller="Category" asp-route-key="@category.ProtectorId" class="btn btn-primary">Düzenle</a>
           &nbsp;
           <button onclick="onDelete('@category.ProtectorId')" class="btn btn-danger">Sil</button>
         </td>
@@ -70,7 +70,7 @@
       if(result) {
         $.ajax({
           method:'POST',
-          url:'/Category/Delete',
+          url:'/Admin/Category/Delete',
           contentType:'application/json',
           dataType:'json',
           data:JSON.stringify(deleteRequestObject),

@@ -5,6 +5,7 @@ using NetCoreEF.Application.Handlers;
 using NetCoreEF.Attributes;
 using NetCoreEF.Data;
 using NetCoreEF.Models;
+using NetCoreEF.Services;
 using NetCoreEF.Validators;
 using System.Reflection;
 
@@ -33,6 +34,16 @@ builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<Catego
 // scoped Service web request bazlý instance alýyor.// using blogu içeerisinde tanýmlar, disposeable olsun. her bir controlller request bazlý farklý instance çalýþýr.
 builder.Services.AddDbContext<NorthwindContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("NortwindConn")));
 
+builder.Services.AddTransient<ICartService, CartService>();
+
+#region SessionInMemory
+
+//builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession();
+// class üzerinden HttpContext baðlanýyoruz.
+builder.Services.AddHttpContextAccessor();
+
+#endregion
 
 var app = builder.Build();
 
@@ -47,12 +58,25 @@ if (!app.Environment.IsDevelopment())
   app.UseHsts();
 }
 
+// sesion middleware sürece ekledik.
+app.UseSession();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
+
+
+app.UseEndpoints(endpoints =>
+{
+  endpoints.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+  );
+});
+
 
 app.MapControllerRoute(
     name: "default",

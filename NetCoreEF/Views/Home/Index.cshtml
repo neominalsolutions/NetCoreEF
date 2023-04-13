@@ -2,7 +2,35 @@
     ViewData["Title"] = "Home Page";
 }
 
+@{
+  //string controllerName = ViewContext.RouteData.Values["Controller"].ToString();
+  //string queryString = ViewContext.HttpContext.Request.Query["id"].ToString();
+}
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+
+ @*@await Html.RenderA*@
+  
+
+@* <alert type="Warning" text="Alert-1"></alert>
+  <alert type="Error" text="Alert-2" onClick="showMessage"></alert>*@
+
+@*  <bs-list-group>
+    <bs-list-group-item text="text-1"  badgeText="5" url="https://www.google.com" />
+    <bs-list-group-item text="text-1" badgeText="10" url="https://www.facebook.com" />
+  </bs-list-group>*@
+
 </div>
+
+
+@await Component.InvokeAsync("ProductList")
+
+
+
+
+
+
+

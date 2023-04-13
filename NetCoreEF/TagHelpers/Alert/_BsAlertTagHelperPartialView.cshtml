@@ -1,0 +1,29 @@
+﻿@model NetCoreEF.TagHelpers.Alert.BsAlertTagHelper
+
+
+<div id="@ViewBag.ElementId" class="alert alert-@Model.Color alert-dismissible fade show" role="alert">
+  @Model.Text
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+
+<script>
+
+  var element = document.getElementById("@ViewBag.ElementId");
+
+  console.log('element', element);
+
+
+  element.addEventListener('click', function (event) {
+      console.log('event', event);
+
+      var inputEventName = '@Html.Raw(Model.OnClick)'
+
+      console.log('btn-eventName', inputEventName);
+
+      window[inputEventName](event, event);
+      event.stopPropagation();
+  })
+
+
+</script>

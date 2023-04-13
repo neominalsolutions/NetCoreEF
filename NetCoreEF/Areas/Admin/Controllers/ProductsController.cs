@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NetCoreEF.Data;
 
-namespace NetCoreEF.Controllers
+namespace NetCoreEF.Areas.Admin.Controllers
 {
-    public class ProductsController : Controller
+  [Area("Admin")]
+  public class ProductsController : Controller
     {
         private readonly NorthwindContext _context;
 
@@ -48,8 +49,8 @@ namespace NetCoreEF.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId");
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "SupplierId");
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
+            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "ContactName");
             return View();
         }
 
@@ -66,8 +67,8 @@ namespace NetCoreEF.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "SupplierId", product.SupplierId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
+            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "ContactName", product.SupplierId);
             return View(product);
         }
 
@@ -160,14 +161,14 @@ namespace NetCoreEF.Controllers
             {
                 _context.Products.Remove(product);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-          return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
+            return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
         }
     }
 }

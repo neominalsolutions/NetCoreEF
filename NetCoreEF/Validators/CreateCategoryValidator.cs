@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using NetCoreEF.Models;
+using NetCoreEF.Areas.Admin.Models;
 
 namespace NetCoreEF.Validators
 {
-  public class CreateCategoryValidator:AbstractValidator<CategoryCreateDto>
+    public class CreateCategoryValidator:AbstractValidator<CategoryCreateDto>
   {
     public CreateCategoryValidator()
     {

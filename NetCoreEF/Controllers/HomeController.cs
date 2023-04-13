@@ -15,6 +15,12 @@ namespace NetCoreEF.Controllers
 
     public IActionResult Index()
     {
+
+      //HttpContext.Session.se
+
+     
+
+      // var model = db.categories.tolist();
       return View();
     }
 
