@@ -1,9 +1,11 @@
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using NetCoreEF.Application.Handlers;
 using NetCoreEF.Attributes;
 using NetCoreEF.Data;
+using NetCoreEF.Data.Identity;
 using NetCoreEF.Models;
 using NetCoreEF.Services;
 using NetCoreEF.Validators;
@@ -34,6 +36,43 @@ builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<Catego
 // scoped Service web request bazlý instance alýyor.// using blogu içeerisinde tanýmlar, disposeable olsun. her bir controlller request bazlý farklý instance çalýþýr.
 builder.Services.AddDbContext<NorthwindContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("NortwindConn")));
 
+builder.Services.AddDbContext<AppIdentityDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("NortwindConn")));
+
+
+
+#region CookieAuthentication
+
+builder.Services.AddAuthentication(x =>
+{
+  // Cookies denlen bir þema ile 
+  x.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+  x.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+}).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, x => {
+
+  x.LoginPath = "/Account/Login";
+  x.LogoutPath = "/Account/LogOut";
+  x.SlidingExpiration = true; // her bir günde bir eðer cookie expire olmamoþ ise oturumu 1 gün daha yenile, oturumdan çýkýþ yap demeyene kadar cookie yenilenecek.
+  x.ExpireTimeSpan = TimeSpan.FromDays(1); // 1 gün
+
+
+});
+
+#endregion
+
+// sistemdeki kullanýcý rol ve oturum ile ilgili ayarlarý yaptýðýmý kýsým
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(opt =>
+{
+  opt.User.RequireUniqueEmail = true;
+  opt.Password.RequireDigit = true;
+  opt.Password.RequiredLength = 8;
+  opt.Password.RequireUppercase = true;
+  opt.Password.RequireLowercase = true;
+  opt.Password.RequireNonAlphanumeric = false;
+  opt.SignIn.RequireConfirmedEmail = false;
+  opt.SignIn.RequireConfirmedPhoneNumber = false;
+
+}).AddEntityFrameworkStores<AppIdentityDbContext>();
+
 builder.Services.AddTransient<ICartService, CartService>();
 
 #region SessionInMemory
@@ -45,9 +84,9 @@ builder.Services.AddHttpContextAccessor();
 
 #endregion
 
+
+
 var app = builder.Build();
-
-
 
 
 // Configure the HTTP request pipeline.
@@ -65,7 +104,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication(); // kimlik doðrulamasý middleware çalýþtýr.
 app.UseAuthorization();
 
 

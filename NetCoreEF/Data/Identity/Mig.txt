@@ -1,0 +1,2 @@
+﻿Add-Migration IdentityInit -Context AppIdentityDbContext -o "Data/Identity/Migrations"
+Update-Database -Context AppIdentityDbContext
