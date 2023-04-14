@@ -81,8 +81,8 @@ builder.Services.AddAuthorization(opt =>
   // hem Admin, Hem ProductReadOnly (RoleClaim veya UseClaim)
   opt.AddPolicy("ProductReadOnlyPolicy", policy =>
   {
-    policy.RequireAuthenticatedUser();
-    policy.RequireRole("Admin");
+    policy.RequireAuthenticatedUser(); // kullanýcý oturum açtýysa
+    policy.RequireRole("Admin"); // role claim bakmasý için unutmayalým.
     policy.RequireClaim("ProductReadOnly", "ReadOnly");
   });
 
