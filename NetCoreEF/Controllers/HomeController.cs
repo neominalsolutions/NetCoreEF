@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetCoreEF.Models;
 using System.Diagnostics;
@@ -14,7 +15,7 @@ namespace NetCoreEF.Controllers
       _logger = logger;
     }
 
-    [Authorize]
+   
     public IActionResult Index()
     {
 

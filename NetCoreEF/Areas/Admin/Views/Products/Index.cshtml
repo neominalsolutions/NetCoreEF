@@ -1,13 +1,25 @@
-﻿@model IEnumerable<NetCoreEF.Data.Product>
+﻿
+
+@model IEnumerable<NetCoreEF.Data.Product>
+@inject IAuthorizationService autService
+
 
 @{
     ViewData["Title"] = "Index";
+  var hasWriteAccess = await autService.AuthorizeAsync(User, "ProductWritePolicy");
+
+
 }
 
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+  @* Role ve User Claimleri kontrol etmek için kullanabiliriz User.HasClaim *@
+  @if(User.HasClaim(x=> x.Value == "Delete" && x.Type == "ProductWrite"))
+  {
+  <a asp-action="Create">Create New</a>
+  }
+  
 </p>
 <table class="table">
     <thead>
@@ -73,9 +85,16 @@
                 @Html.DisplayFor(modelItem => item.Supplier.ContactName)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+
+          @if(hasWriteAccess.Succeeded) {
+
+          <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> 
+          <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+          }
+
+          <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> 
+
+                
             </td>
         </tr>
 }

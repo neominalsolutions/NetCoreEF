@@ -13,15 +13,14 @@ namespace NetCoreEF.Areas.Admin.Controllers
 {
 
     [Area("Admin")]
-  public class CategoryController : Controller
+  public class CategoryController : AdminBaseController
     {
         private readonly NorthwindContext db;
         public IDataProtector _protector;
         private IMapper mapper;
         private ILogger<CategoryController> logger;
-        private IMediator mediator;
 
-        public CategoryController(NorthwindContext db, IDataProtectionProvider provider, IMapper mapper, ILogger<CategoryController> logger, IMediator mediator)
+        public CategoryController(NorthwindContext db, IDataProtectionProvider provider, IMapper mapper, ILogger<CategoryController> logger, IMediator mediator):base(mediator)
         {
             this.db = db;
             _protector = provider.CreateProtector("kategoriId");

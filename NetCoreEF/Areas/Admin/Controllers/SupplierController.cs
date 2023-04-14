@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +11,11 @@ using NetCoreEF.Data;
 namespace NetCoreEF.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class SupplierController : Controller
-    {
+    public class SupplierController : AdminBaseController
+  {
         private readonly NorthwindContext _context;
 
-        public SupplierController(NorthwindContext context)
+        public SupplierController(NorthwindContext context, IMediator mediator):base(mediator)
         {
             _context = context;
         }

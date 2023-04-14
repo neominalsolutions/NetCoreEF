@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,23 +12,26 @@ using NetCoreEF.Data;
 namespace NetCoreEF.Areas.Admin.Controllers
 {
   [Area("Admin")]
-  public class ProductsController : Controller
-    {
+  public class ProductsController : AdminBaseController
+  {
         private readonly NorthwindContext _context;
 
-        public ProductsController(NorthwindContext context)
+        public ProductsController(NorthwindContext context, IMediator mediator):base(mediator)
         {
             _context = context;
         }
 
-        // GET: Products
+    // GET: Products
+
+    [Authorize(Policy = "ProductReadOnlyPolicy")]
         public async Task<IActionResult> Index()
         {
             var northwindContext = _context.Products.Include(p => p.Category).Include(p => p.Supplier);
             return View(await northwindContext.ToListAsync());
         }
 
-        // GET: Products/Details/5
+    // GET: Products/Details/5
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Products == null)

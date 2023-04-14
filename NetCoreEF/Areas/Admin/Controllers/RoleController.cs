@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetCoreEF.Data.Identity;
@@ -6,11 +7,11 @@ using System.Security.Claims;
 
 namespace NetCoreEF.Areas.Admin.Controllers
 {
-  public class RoleController : Controller
+  public class RoleController : AdminBaseController
   {
     private readonly RoleManager<ApplicationRole> roleManager;
 
-    public RoleController(RoleManager<ApplicationRole> roleManager)
+    public RoleController(RoleManager<ApplicationRole> roleManager, IMediator mediator):base(mediator)
     {
       this.roleManager = roleManager;
     }

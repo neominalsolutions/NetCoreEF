@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetCoreEF.Data.Identity;
@@ -6,11 +7,11 @@ using System.Security.Claims;
 
 namespace NetCoreEF.Areas.Admin.Controllers
 {
-  public class UserController : Controller
+  public class UserController : AdminBaseController
   {
     private readonly UserManager<ApplicationUser> userManager;
 
-    public UserController(UserManager<ApplicationUser>  userManager)
+    public UserController(UserManager<ApplicationUser>  userManager, IMediator mediator):base(mediator)
     {
       this.userManager = userManager;
     }

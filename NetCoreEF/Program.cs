@@ -1,6 +1,7 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NetCoreEF.Application.Handlers;
 using NetCoreEF.Attributes;
@@ -47,17 +48,58 @@ builder.Services.AddAuthentication(x =>
   // Cookies denlen bir þema ile 
   x.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
   x.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-}).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, x => {
+}).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, x =>
+{
 
   x.LoginPath = "/Account/Login";
   x.LogoutPath = "/Account/LogOut";
+  x.AccessDeniedPath = "/Account/AccessDenied";
   x.SlidingExpiration = true; // her bir günde bir eðer cookie expire olmamoþ ise oturumu 1 gün daha yenile, oturumdan çýkýþ yap demeyene kadar cookie yenilenecek.
   x.ExpireTimeSpan = TimeSpan.FromDays(1); // 1 gün
 
 
 });
 
+//builder.Services.AddAuthentication().AddCookie(x => {
+
+//  x.LoginPath = "/Account/Login";
+//  x.LogoutPath = "/Account/LogOut";
+//  x.AccessDeniedPath = "/Account/AccessDenied";
+//  x.SlidingExpiration = true; // her bir günde bir eðer cookie expire olmamoþ ise oturumu 1 gün daha yenile, oturumdan çýkýþ yap demeyene kadar cookie yenilenecek.
+//  x.ExpireTimeSpan = TimeSpan.FromDays(1); // 1 gün
+
+
+//});
+
+//builder.Services.AddScoped<UserManager<ApplicationUser>>();
+//builder.Services.AddScoped<SignInManager<ApplicationUser>>();
+//builder.Services.AddScoped<RoleManager<ApplicationRole>>();
 #endregion
+
+builder.Services.AddAuthorization(opt =>
+{
+  // hem Admin, Hem ProductReadOnly (RoleClaim veya UseClaim)
+  opt.AddPolicy("ProductReadOnlyPolicy", policy =>
+  {
+    policy.RequireAuthenticatedUser();
+    policy.RequireRole("Admin");
+    policy.RequireClaim("ProductReadOnly", "ReadOnly");
+  });
+
+  opt.AddPolicy("ProductWritePolicy", policy =>
+  {
+    policy.RequireAuthenticatedUser();
+    policy.RequireRole("Admin");
+    policy.RequireClaim("ProductWrite", "Delete", "Update", "Create"); // sistem login olurken sadece user info user claim ve role bilgilerini cookie bastý
+
+  });
+
+  opt.AddPolicy("ProductUpdateOnlyPolicy", policy =>
+  {
+    policy.RequireClaim("ProductUpdateOnly", "Update");
+  });
+});
+
 
 // sistemdeki kullanýcý rol ve oturum ile ilgili ayarlarý yaptýðýmý kýsým
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(opt =>
